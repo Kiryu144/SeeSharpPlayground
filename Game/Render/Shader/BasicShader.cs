@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics;
+﻿using Game.Render.Buffer;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
@@ -13,6 +14,8 @@ namespace Game.Render.Shader
         {
             _uniformModelViewMatrix = GetRequiredUniformLocation("modelViewMatrix");
             _uniformProjectionMatrix = GetRequiredUniformLocation("projectionMatrix");
+            
+            VertexTypes.Add(VertexType.Position);
         }
 
         public unsafe void SetModelViewMatrix(Matrix4 modelViewMatrix)

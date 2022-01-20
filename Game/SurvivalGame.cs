@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Game.Render;
+using Game.Render.Buffer;
 using Game.Render.Shader;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -11,11 +13,8 @@ namespace Game
 {
     public class SurvivalGame : GameWindow
     {
-        private Matrix4 _projectionMatrix;
-        private Matrix4 _modelViewMatrix;
-        
-        private VertexArrayHandle _vao;
-        private BufferHandle _vertexBuffer;
+        Renderer _renderer = new();
+        Mesh _mesh;
         
         public SurvivalGame(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
         {
@@ -27,19 +26,15 @@ namespace Game
             GL.Enable(EnableCap.DebugOutput);
             GL.Enable(EnableCap.DebugOutputSynchronous);
 
-            float[] vertices = {
-                0.0f, 0.0f, 0.0f,
-                0.0f, 1.0f, 0.0f,
-                1.0f, 0.0f, 0.0f
-            };
-            
-            _vao = GL.GenVertexArray();
-            GL.BindVertexArray(_vao);
+            MeshBuilder quad = new MeshBuilder();
+            quad.Position(new Vector3(0.0f, 0.0f, 0.0f)).EndVertex();
+            quad.Position(new Vector3(0.0f, 1.0f, 0.0f)).EndVertex();
+            quad.Position(new Vector3(1.0f, 1.0f, 0.0f)).EndVertex();
+            quad.Position(new Vector3(1.0f, 0.0f, 0.0f)).EndVertex();
+            quad.Position(new Vector3(0.0f, 0.0f, 0.0f)).EndVertex();
+            quad.Position(new Vector3(1.0f, 1.0f, 0.0f)).EndVertex();
+            _mesh = quad.Build();
 
-            _vertexBuffer = GL.GenBuffer();
-            GL.BindBuffer(BufferTargetARB.ArrayBuffer, _vertexBuffer);
-            GL.BufferData(BufferTargetARB.ArrayBuffer, vertices, BufferUsageARB.StaticDraw);
-            
             GL.Disable(EnableCap.CullFace);
             
         }
@@ -53,26 +48,11 @@ namespace Game
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
             
-            _modelViewMatrix = Matrix4.Identity;
+            //_renderer.ViewMatrix = Matrix4.Identity;
+            _renderer.ViewMatrix = Matrix4.LookAt(5.0f, 5.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+            _renderer.Render(_mesh, PrimitiveType.Triangles, Shaders.PositionShader);
             
-            long milliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-            _modelViewMatrix *= Matrix4.CreateRotationY((float) Math.Sin(milliseconds / 1000D) * 2.0f);
-            
-            _modelViewMatrix *= Matrix4.LookAt(5.0f, 5.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f); 
-            
-            GL.BindBuffer(BufferTargetARB.ArrayBuffer, _vertexBuffer);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-            GL.EnableVertexAttribArray(0);
-
-            Shaders.PositionShader.Use();
-            Shaders.PositionShader.SetProjectionMatrix(_projectionMatrix);
-            Shaders.PositionShader.SetModelViewMatrix(_modelViewMatrix);
-            
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-
-
             Context.SwapBuffers();
-
             base.OnRenderFrame(args);
         }
 
@@ -85,7 +65,7 @@ namespace Game
         {
             base.OnResize(e);
             GL.Viewport(0, 0, e.Width, e.Height);
-            Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(80.0f),  (float) e.Width / e.Height, 0.1f, 100.0f, out _projectionMatrix);
+            _renderer.ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(80.0f),  (float) e.Width / e.Height, 0.1f, 100.0f);
         }
     }
 }

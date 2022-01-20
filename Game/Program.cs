@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿using System;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Desktop;
 
 namespace Game
@@ -18,7 +19,8 @@ namespace Game
             {
                 Size = new Vector2i(1440, 900),
                 Title = "SurvivalGame",
-                StartFocused = true
+                StartFocused = true,
+                APIVersion = new Version(4, 1)
             };
             
             using(SurvivalGame game = new SurvivalGame(gameWindowSettings, nativeWindowSettings))

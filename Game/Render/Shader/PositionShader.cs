@@ -6,7 +6,7 @@ namespace Game.Render.Shader
     {
         private static readonly string vertex = 
             @"
-                #version 150
+                #version 410
 
                 in vec3 position;
 
@@ -20,7 +20,7 @@ namespace Game.Render.Shader
         
         private static readonly string fragment = 
             @"
-                #version 150
+                #version 410
 
                 out vec4 color;
 

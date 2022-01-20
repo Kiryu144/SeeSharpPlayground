@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Game.Render.Buffer;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
@@ -9,6 +10,7 @@ namespace Game.Render.Shader
     public abstract class ShaderProgram
     {
         ProgramHandle _programHandle;
+        public List<VertexType> VertexTypes { get; } = new();
 
         public ShaderProgram(ProgramHandle handle)
         {
