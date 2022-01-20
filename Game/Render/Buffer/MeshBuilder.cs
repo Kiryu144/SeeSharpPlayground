@@ -8,10 +8,10 @@ namespace Game.Render.Buffer
 {
     public class MeshBuilder
     {
-        private List<float> _positions = new();
-        private List<float> _normals = new();
-        private List<float> _uvs = new();
-        private List<float> _colors = new(); 
+        private List<Vector3> _positions = new();
+        private List<Vector3> _normals = new();
+        private List<Vector2> _uvs = new();
+        private List<Vector4> _colors = new(); 
         private List<uint> _indicies = new(); 
         
         private Vector3? _currentPosition;
@@ -43,7 +43,7 @@ namespace Game.Render.Buffer
             return this;
         }
         
-        public unsafe void EndVertex()
+        public void EndVertex()
         {
             if (_currentPosition == null)
             {
@@ -66,26 +66,26 @@ namespace Game.Render.Buffer
                 }
             }
             
-            _positions.Add(_currentPosition.Value.X);
-            _positions.Add(_currentPosition.Value.Y);
-            _positions.Add(_currentPosition.Value.Z);
+            _positions.Add(_currentPosition.Value); 
             
             if (_currentNormal != null)
             {
-                //_normals.Add(_currentNormal.Value);
+                _normals.Add(_currentNormal.Value);
             }
             
             if (_currentUv != null)
             {
-               // _uvs.Add(_currentUv.Value);
+                _uvs.Add(_currentUv.Value);
             }
             
             if (_currentColor != null)
             {
-               // _colors.Add(_currentColor.Value);
+                _colors.Add(_currentColor.Value);
             }
             
-            _indicies.Add((uint) (_positions.Count - 1));
+            _indicies.Add((uint) _indicies.Count);
+            _indicies.Add((uint) _indicies.Count);
+            _indicies.Add((uint) _indicies.Count);
             
             _currentPosition = null;
             _currentNormal = null;
@@ -93,7 +93,7 @@ namespace Game.Render.Buffer
             _currentColor = null;
         }
         
-        public unsafe Mesh Build()
+        public Mesh Build()
         {
             if (_positions.Count == 0)
             {
@@ -109,7 +109,7 @@ namespace Game.Render.Buffer
             var positionBuffer = GL.GenBuffer();
             buffers.Add(positionBuffer);
             GL.BindBuffer(BufferTargetARB.ArrayBuffer, positionBuffer);
-            GL.BufferData(BufferTargetARB.ArrayBuffer, _positions.Count * sizeof(float), _positions[0], BufferUsageARB.StaticDraw);
+            GL.BufferData(BufferTargetARB.ArrayBuffer, _positions.ToArray(), BufferUsageARB.StaticDraw);
             GL.EnableVertexAttribArray(vertexAttribPointerLocation);
             GL.VertexAttribPointer(vertexAttribPointerLocation++, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.BindBuffer(BufferTargetARB.ArrayBuffer, BufferHandle.Zero);
@@ -120,7 +120,7 @@ namespace Game.Render.Buffer
                 var normalBuffer = GL.GenBuffer();
                 buffers.Add(normalBuffer);
                 GL.BindBuffer(BufferTargetARB.ArrayBuffer, normalBuffer);
-                GL.BufferData(BufferTargetARB.ArrayBuffer, _normals.Count * sizeof(Vector3), _normals[0], BufferUsageARB.StaticDraw);
+                GL.BufferData(BufferTargetARB.ArrayBuffer, _normals.ToArray(), BufferUsageARB.StaticDraw);
                 GL.EnableVertexAttribArray(vertexAttribPointerLocation);
                 GL.VertexAttribPointer(vertexAttribPointerLocation++, 3, VertexAttribPointerType.Float, false, 0, 0);
             }
@@ -130,7 +130,7 @@ namespace Game.Render.Buffer
                 var uvBuffer = GL.GenBuffer();
                 buffers.Add(uvBuffer);
                 GL.BindBuffer(BufferTargetARB.ArrayBuffer, uvBuffer);
-                GL.BufferData(BufferTargetARB.ArrayBuffer, _uvs.Count * sizeof(Vector2), _uvs[0], BufferUsageARB.StaticDraw);
+                GL.BufferData(BufferTargetARB.ArrayBuffer, _uvs.ToArray(), BufferUsageARB.StaticDraw);
                 GL.EnableVertexAttribArray(vertexAttribPointerLocation);
                 GL.VertexAttribPointer(vertexAttribPointerLocation++, 2, VertexAttribPointerType.Float, false, 0, 0);
             }
@@ -140,7 +140,7 @@ namespace Game.Render.Buffer
                 var colorBuffer = GL.GenBuffer();
                 buffers.Add(colorBuffer);
                 GL.BindBuffer(BufferTargetARB.ArrayBuffer, colorBuffer);
-                GL.BufferData(BufferTargetARB.ArrayBuffer, _colors.Count * sizeof(Vector4), _colors[0], BufferUsageARB.StaticDraw);
+                GL.BufferData(BufferTargetARB.ArrayBuffer, _colors.ToArray(), BufferUsageARB.StaticDraw);
                 GL.EnableVertexAttribArray(vertexAttribPointerLocation);
                 GL.VertexAttribPointer(vertexAttribPointerLocation, 4, VertexAttribPointerType.Float, false, 0, 0);
             }
@@ -148,11 +148,11 @@ namespace Game.Render.Buffer
             var indexBuffer = GL.GenBuffer();
             buffers.Add(indexBuffer);
             GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, indexBuffer);
-            GL.BufferData(BufferTargetARB.ElementArrayBuffer, _indicies.Count * sizeof(uint), _indicies[0], BufferUsageARB.StaticDraw);
+            GL.BufferData(BufferTargetARB.ElementArrayBuffer, _indicies.ToArray(), BufferUsageARB.StaticDraw);
             
             GL.BindVertexArray(VertexArrayHandle.Zero);
 
-            return new Mesh(vao, _positions.Count / 3, buffers);
+            return new Mesh(vao, _positions.Count, buffers);
         }
     }
 }

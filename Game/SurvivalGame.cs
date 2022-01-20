@@ -14,14 +14,16 @@ namespace Game
     public class SurvivalGame : GameWindow
     {
         Renderer _renderer = new();
-        Mesh _mesh;
+        
+        Mesh _quad;
+        Mesh _triangle;
         
         public SurvivalGame(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
         {
             GL.DebugMessageCallback((source, type, id, severity, length, message, param) =>
             {
                 string messageString = Marshal.PtrToStringAnsi(message, length);
-                System.Console.WriteLine($"OpenGL Error: id = {id}, severity = {severity}, message = {messageString}");
+                Console.WriteLine($"OpenGL Error: id = {id}, severity = {severity}, message = {messageString}");
             }, 0);
             GL.Enable(EnableCap.DebugOutput);
             GL.Enable(EnableCap.DebugOutputSynchronous);
@@ -33,10 +35,13 @@ namespace Game
             quad.Position(new Vector3(1.0f, 0.0f, 0.0f)).EndVertex();
             quad.Position(new Vector3(0.0f, 0.0f, 0.0f)).EndVertex();
             quad.Position(new Vector3(1.0f, 1.0f, 0.0f)).EndVertex();
-            _mesh = quad.Build();
-
-            GL.Disable(EnableCap.CullFace);
+            _quad = quad.Build();
             
+            MeshBuilder triangle = new MeshBuilder();
+            triangle.Position(new Vector3(0.5f, 0.0f, 0.0f)).EndVertex();
+            triangle.Position(new Vector3(1.0f, 1.0f, 0.0f)).EndVertex();
+            triangle.Position(new Vector3(0.0f, 1.0f, 0.0f)).EndVertex();
+            _triangle = triangle.Build();
         }
 
         protected override void OnUpdateFrame(FrameEventArgs args)
@@ -46,14 +51,18 @@ namespace Game
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            
-            //_renderer.ViewMatrix = Matrix4.Identity;
-            _renderer.ViewMatrix = Matrix4.LookAt(5.0f, 5.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-            _renderer.Render(_mesh, PrimitiveType.Triangles, Shaders.PositionShader);
-            
-            Context.SwapBuffers();
             base.OnRenderFrame(args);
+            Context.SwapBuffers();
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            _renderer.ViewMatrix = Matrix4.LookAt(0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+            
+            _renderer.MatrixStack.Push();
+            
+            _renderer.Render(_quad, PrimitiveType.Triangles, Shaders.PositionShader);
+            _renderer.MatrixStack.Translate(0.0f, 1.0f, 0.0f);
+            _renderer.Render(_triangle, PrimitiveType.Triangles, Shaders.PositionShader);
+            
+            _renderer.MatrixStack.Pop();
         }
 
         public override void ProcessEvents()

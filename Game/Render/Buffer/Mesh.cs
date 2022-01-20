@@ -5,13 +5,13 @@ namespace Game.Render.Buffer
 {
     public class Mesh
     {
-        public List<BufferHandle> _bufferHandles = new();
-        public VertexArrayHandle VAO { get; } 
+        private List<BufferHandle> _bufferHandles = new();
+        public VertexArrayHandle Vao { get; } 
         public int VerticeCount { get; }
 
         public Mesh(VertexArrayHandle vao, int verticeCount, IEnumerable<BufferHandle> bufferHandles)
         {
-            VAO = vao;
+            Vao = vao;
             VerticeCount = verticeCount;
             _bufferHandles.AddRange(bufferHandles);
         }

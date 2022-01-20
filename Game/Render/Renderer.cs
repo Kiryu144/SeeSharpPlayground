@@ -15,8 +15,6 @@ namespace Game.Render
         
         public void Render(Mesh mesh, PrimitiveType type, ShaderProgram shader)
         {
-            
-
             shader.Use();
             if (shader is BasicShader positionShader)
             {
@@ -24,8 +22,9 @@ namespace Game.Render
                 positionShader.SetModelViewMatrix(ViewMatrix * MatrixStack.Combine());
             }
 
-            GL.BindVertexArray(mesh.VAO);
+            GL.BindVertexArray(mesh.Vao);
             GL.DrawElements(type, mesh.VerticeCount, DrawElementsType.UnsignedInt, 0);
+            GL.BindVertexArray(VertexArrayHandle.Zero);
         }
     }
 }
