@@ -19,7 +19,7 @@ namespace Game.Render
             if (shader is BasicShader positionShader)
             {
                 positionShader.SetProjectionMatrix(ProjectionMatrix);
-                positionShader.SetModelViewMatrix(ViewMatrix * MatrixStack.Combine());
+                positionShader.SetModelViewMatrix(MatrixStack.Combine() * ViewMatrix);
             }
 
             GL.BindVertexArray(mesh.Vao);

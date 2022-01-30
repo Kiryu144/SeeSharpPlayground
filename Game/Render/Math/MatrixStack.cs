@@ -36,8 +36,21 @@ namespace Game.Render.Math
         
         public void Rotate(float radians, float x, float y, float z)
         {
-            var m = _stack.Pop();
-            //_stack.Push(m * Matrix4.Rotate(new Vector3d(x, y, z), radians));
+            if (x != 0.0f)
+            {
+                var m = _stack.Pop();
+                _stack.Push(m * Matrix4.CreateRotationX(radians * x));
+            }
+            if (y != 0.0f)
+            {
+                var m = _stack.Pop();
+                _stack.Push(m * Matrix4.CreateRotationY(radians * y));
+            }
+            if (z != 0.0f)
+            {
+                var m = _stack.Pop();
+                _stack.Push(m * Matrix4.CreateRotationZ(radians * z));
+            }
         }
         
         public Matrix4 Combine()

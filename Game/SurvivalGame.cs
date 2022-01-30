@@ -32,18 +32,23 @@ namespace Game
             }, 0);
             GL.Enable(EnableCap.DebugOutput);
             GL.Enable(EnableCap.DebugOutputSynchronous);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
             
             LimitedContainer3D<Voxel> voxels = new LimitedContainer3D<Voxel>(16);
-            foreach (var cursor in voxels.GetRegion(new Vector3i(0, 0, 0), new Vector3i(15, 10, 15)))
+            foreach (var cursor in voxels.GetRegion(new Vector3i(0, 0, 0), new Vector3i(16, 10, 16)))
             {
                 // Stone
-                cursor.Value = new Voxel(0xFF5C5C5C);
+                cursor.Value = new Voxel(Color.FromARGB(0xFF5C5C5C));
             }
-            foreach (var cursor in voxels.GetRegion(new Vector3i(0, 10, 0), new Vector3i(15, 1, 15)))
+            foreach (var cursor in voxels.GetRegion(new Vector3i(0, 10, 0), new Vector3i(16, 1, 16)))
             {
                 // Grass
-                cursor.Value = new Voxel(0xFF1B9400);
+                cursor.Value = new Voxel(Color.FromARGB(0xFF1B9400));
             }
+            voxels[new Vector3i(10, 12, 10)] = new Voxel(Color.FromARGB(0xFF8888FF));
+            voxels[new Vector3i(10, 11, 10)] = new Voxel(Color.FromARGB(0xFF8888FF));
+            
             _voxels = VoxelMesher.CreateMesh(voxels);
         }
 
@@ -56,10 +61,13 @@ namespace Game
         {
             base.OnRenderFrame(args);
             Context.SwapBuffers();
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             _renderer.ViewMatrix = Matrix4.LookAt(25.0f, 25.0f, 25.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
             
             _renderer.MatrixStack.Push();
+            _renderer.MatrixStack.Translate(-8, -8, -8);
+            _renderer.MatrixStack.Rotate((float) (((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) / 2000.0d) % 10000.0d) , 0.25f, 1.0f, 0.43f);
+            _renderer.MatrixStack.Translate(8, 8, 8);
             _renderer.Render(_voxels, PrimitiveType.Triangles, Shaders.PositionColorShader);
             _renderer.MatrixStack.Pop();
         }

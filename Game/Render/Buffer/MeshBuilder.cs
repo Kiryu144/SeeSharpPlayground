@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using Color = Game.Game.Container.Color;
 
 namespace Game.Render.Buffer
 {
@@ -36,16 +38,10 @@ namespace Game.Render.Buffer
             _currentUv = uv;
             return this;
         }
-        
-        // ARGB (IN)
-        // ABGR (OUT)
-        public MeshBuilder Color(uint color)
+
+        public MeshBuilder Color(Color color)
         {
-            _currentColor = 0;
-            _currentColor |= color & 0xFF000000; // A
-            _currentColor |= color & 0x0000FF00; // G
-            _currentColor |= (color >> 16) & 0x000000FF; // R
-            _currentColor |= (color << 16) & 0x00FF0000; // B
+            _currentColor = color.OpenGLColor;
             return this;
         }
         

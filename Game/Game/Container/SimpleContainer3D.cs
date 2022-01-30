@@ -61,10 +61,15 @@ namespace Game.Game.Container
 
         public IEnumerable<ICursor3D<T>> GetRegion(Vector3i start, Vector3i size)
         {
+            if (size.X <= 0 || size.Y <= 0 || size.Z <= 0)
+            {
+                yield break;
+            }
+            
             Debug.Assert(InBounds(start), $"Start position out of bounds {start}");
             Vector3i end = start + size;
-            Debug.Assert(size.X >= 0 && end.X < Size.X && size.Y >= 0 && end.Y < Size.Y && size.Z >= 0 && end.Z < Size.Z , $"Size too big {size}");
-
+            Debug.Assert(end.X <= Size.X && end.Y <= Size.Y && end.Z <= Size.Z , $"Size too big {size}");
+            
             Cursor cursor = new Cursor(this);
             for (int x = start.X; x < end.X; ++x)
             {
@@ -72,7 +77,9 @@ namespace Game.Game.Container
                 {
                     for (int z = start.Z; z < end.Z; ++z)
                     {
-                        cursor.Index = Index(new Vector3i(x, y, z));
+                        Vector3i pos = new Vector3i(x, y, z);
+                        cursor._Position = pos;
+                        cursor.Index = Index(pos);
                         yield return cursor;
                     }
                 }

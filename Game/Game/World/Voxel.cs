@@ -1,19 +1,21 @@
-﻿namespace Game.Game.World
+﻿using Game.Game.Container;
+
+namespace Game.Game.World
 {
     public struct Voxel
     {
         public static readonly Voxel Air = new();
         
-        public uint Color;
+        public Color Color;
 
-        public Voxel(uint color = 0)
+        public Voxel(Color color)
         {
             Color = color;
         }
 
         public bool IsInvisible()
         {
-            return ((Color >> 24) & 0xFF) == 0;
+            return Color.A == 0;
         }
     }
 }
