@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Game.Game.Container;
+using Game.Game.World;
 using Game.Render;
 using Game.Render.Buffer;
 using Game.Render.Shader;
@@ -14,34 +17,34 @@ namespace Game
     public class SurvivalGame : GameWindow
     {
         Renderer _renderer = new();
-        
-        Mesh _quad;
-        Mesh _triangle;
+
+        Mesh _voxels;
         
         public SurvivalGame(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
         {
             GL.DebugMessageCallback((source, type, id, severity, length, message, param) =>
             {
-                string messageString = Marshal.PtrToStringAnsi(message, length);
-                Console.WriteLine($"OpenGL Error: id = {id}, severity = {severity}, message = {messageString}");
+                if (severity != DebugSeverity.DebugSeverityNotification)
+                {
+                    string messageString = Marshal.PtrToStringAnsi(message, length);
+                    Console.WriteLine($"OpenGL Error: id = {id}, severity = {severity}, message = {messageString}");
+                }
             }, 0);
             GL.Enable(EnableCap.DebugOutput);
             GL.Enable(EnableCap.DebugOutputSynchronous);
-
-            MeshBuilder quad = new MeshBuilder();
-            quad.Position(new Vector3(0.0f, 0.0f, 0.0f)).EndVertex();
-            quad.Position(new Vector3(0.0f, 1.0f, 0.0f)).EndVertex();
-            quad.Position(new Vector3(1.0f, 1.0f, 0.0f)).EndVertex();
-            quad.Position(new Vector3(1.0f, 0.0f, 0.0f)).EndVertex();
-            quad.Position(new Vector3(0.0f, 0.0f, 0.0f)).EndVertex();
-            quad.Position(new Vector3(1.0f, 1.0f, 0.0f)).EndVertex();
-            _quad = quad.Build();
             
-            MeshBuilder triangle = new MeshBuilder();
-            triangle.Position(new Vector3(0.5f, 0.0f, 0.0f)).EndVertex();
-            triangle.Position(new Vector3(1.0f, 1.0f, 0.0f)).EndVertex();
-            triangle.Position(new Vector3(0.0f, 1.0f, 0.0f)).EndVertex();
-            _triangle = triangle.Build();
+            LimitedContainer3D<Voxel> voxels = new LimitedContainer3D<Voxel>(16);
+            foreach (var cursor in voxels.GetRegion(new Vector3i(0, 0, 0), new Vector3i(15, 10, 15)))
+            {
+                // Stone
+                cursor.Value = new Voxel(0xFF5C5C5C);
+            }
+            foreach (var cursor in voxels.GetRegion(new Vector3i(0, 10, 0), new Vector3i(15, 1, 15)))
+            {
+                // Grass
+                cursor.Value = new Voxel(0xFF1B9400);
+            }
+            _voxels = VoxelMesher.CreateMesh(voxels);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs args)
@@ -54,14 +57,10 @@ namespace Game
             base.OnRenderFrame(args);
             Context.SwapBuffers();
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            _renderer.ViewMatrix = Matrix4.LookAt(0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+            _renderer.ViewMatrix = Matrix4.LookAt(25.0f, 25.0f, 25.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
             
             _renderer.MatrixStack.Push();
-            
-            _renderer.Render(_quad, PrimitiveType.Triangles, Shaders.PositionShader);
-            _renderer.MatrixStack.Translate(0.0f, 1.0f, 0.0f);
-            _renderer.Render(_triangle, PrimitiveType.Triangles, Shaders.PositionShader);
-            
+            _renderer.Render(_voxels, PrimitiveType.Triangles, Shaders.PositionColorShader);
             _renderer.MatrixStack.Pop();
         }
 

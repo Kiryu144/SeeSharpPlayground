@@ -11,13 +11,13 @@ namespace Game.Render.Buffer
         private List<Vector3> _positions = new();
         private List<Vector3> _normals = new();
         private List<Vector2> _uvs = new();
-        private List<Vector4> _colors = new(); 
+        private List<uint> _colors = new(); 
         private List<uint> _indicies = new(); 
         
         private Vector3? _currentPosition;
         private Vector3? _currentNormal;
         private Vector2? _currentUv;
-        private Vector4? _currentColor;
+        private uint? _currentColor;
 
         public MeshBuilder Position(Vector3 position)
         {
@@ -37,9 +37,15 @@ namespace Game.Render.Buffer
             return this;
         }
         
-        public MeshBuilder Color(Vector4 color)
+        // ARGB (IN)
+        // ABGR (OUT)
+        public MeshBuilder Color(uint color)
         {
-            _currentColor = color;
+            _currentColor = 0;
+            _currentColor |= color & 0xFF000000; // A
+            _currentColor |= color & 0x0000FF00; // G
+            _currentColor |= (color >> 16) & 0x000000FF; // R
+            _currentColor |= (color << 16) & 0x00FF0000; // B
             return this;
         }
         
@@ -142,7 +148,7 @@ namespace Game.Render.Buffer
                 GL.BindBuffer(BufferTargetARB.ArrayBuffer, colorBuffer);
                 GL.BufferData(BufferTargetARB.ArrayBuffer, _colors.ToArray(), BufferUsageARB.StaticDraw);
                 GL.EnableVertexAttribArray(vertexAttribPointerLocation);
-                GL.VertexAttribPointer(vertexAttribPointerLocation, 4, VertexAttribPointerType.Float, false, 0, 0);
+                GL.VertexAttribPointer(vertexAttribPointerLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0, 0);
             }
             
             var indexBuffer = GL.GenBuffer();

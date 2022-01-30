@@ -7,7 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="DotnetNoise" Version="1.0.0" />
       <PackageReference Include="OpenTK" Version="5.0.0-pre.6" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Game" />
     </ItemGroup>
 
 </Project>
