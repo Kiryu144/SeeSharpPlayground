@@ -34,6 +34,16 @@ namespace Game.Render.Math
             _stack.Push(m * Matrix4.CreateScale(x, y, z));
         }
         
+        public void Translate(Vector3 v)
+        {
+            Translate(v.X, v.Y, v.Z);
+        }
+        
+        public void Scale(Vector3 v)
+        {
+            Scale(v.X, v.Y, v.Z);
+        }
+        
         public void Rotate(float radians, float x, float y, float z)
         {
             if (x != 0.0f)

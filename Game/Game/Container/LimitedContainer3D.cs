@@ -116,9 +116,8 @@ namespace Game.Game.Container
                 _container = container;
             }
             
-            public T Neighbour(Vector3i direction, in T _default)
+            public T Relative(Vector3i direction, in T _default)
             {
-                Debug.Assert(System.Math.Abs(direction.X) <= 1 && System.Math.Abs(direction.Y) <= 1 && System.Math.Abs(direction.Z) <= 1, $"Direction must be normalized ({direction})");
                 Vector3i pos = Position + direction;
                 return _container.InBounds(pos) ? _container[pos] : _default;
             }

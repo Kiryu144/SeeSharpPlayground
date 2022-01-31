@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Game.Game.Container;
 using Game.Game.World;
 using Game.Render;
-using Game.Render.Buffer;
-using Game.Render.Shader;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -16,10 +11,9 @@ namespace Game
 {
     public class SurvivalGame : GameWindow
     {
-        Renderer _renderer = new();
+        public static Renderer Renderer = new();
+        private World _world;
 
-        Mesh _voxels;
-        
         public SurvivalGame(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
         {
             GL.DebugMessageCallback((source, type, id, severity, length, message, param) =>
@@ -35,21 +29,7 @@ namespace Game
             GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
             
-            LimitedContainer3D<Voxel> voxels = new LimitedContainer3D<Voxel>(16);
-            foreach (var cursor in voxels.GetRegion(new Vector3i(0, 0, 0), new Vector3i(16, 10, 16)))
-            {
-                // Stone
-                cursor.Value = new Voxel(Color.FromARGB(0xFF5C5C5C));
-            }
-            foreach (var cursor in voxels.GetRegion(new Vector3i(0, 10, 0), new Vector3i(16, 1, 16)))
-            {
-                // Grass
-                cursor.Value = new Voxel(Color.FromARGB(0xFF1B9400));
-            }
-            voxels[new Vector3i(10, 12, 10)] = new Voxel(Color.FromARGB(0xFF8888FF));
-            voxels[new Vector3i(10, 11, 10)] = new Voxel(Color.FromARGB(0xFF8888FF));
-            
-            _voxels = VoxelMesher.CreateMesh(voxels);
+            _world = new World();
         }
 
         protected override void OnUpdateFrame(FrameEventArgs args)
@@ -62,14 +42,11 @@ namespace Game
             base.OnRenderFrame(args);
             Context.SwapBuffers();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            _renderer.ViewMatrix = Matrix4.LookAt(25.0f, 25.0f, 25.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+            Renderer.ViewMatrix = Matrix4.Identity;
             
-            _renderer.MatrixStack.Push();
-            _renderer.MatrixStack.Translate(-8, -8, -8);
-            _renderer.MatrixStack.Rotate((float) (((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) / 2000.0d) % 10000.0d) , 0.25f, 1.0f, 0.43f);
-            _renderer.MatrixStack.Translate(8, 8, 8);
-            _renderer.Render(_voxels, PrimitiveType.Triangles, Shaders.PositionColorShader);
-            _renderer.MatrixStack.Pop();
+            Renderer.MatrixStack.Push();
+            _world.Tick();
+            Renderer.MatrixStack.Pop();
         }
 
         public override void ProcessEvents()
@@ -81,7 +58,7 @@ namespace Game
         {
             base.OnResize(e);
             GL.Viewport(0, 0, e.Width, e.Height);
-            _renderer.ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(80.0f),  (float) e.Width / e.Height, 0.1f, 100.0f);
+            Renderer.ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(80.0f),  (float) e.Width / e.Height, 0.1f, 100.0f);
         }
     }
 }

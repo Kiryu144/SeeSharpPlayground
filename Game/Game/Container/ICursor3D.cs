@@ -7,6 +7,6 @@ namespace Game.Game.Container
         T Value { get; set; }   
         Vector3i Position { get; }
         
-        T Neighbour(Vector3i direction, in T _default);
+        T Relative(Vector3i direction, in T _default);
     }
 }

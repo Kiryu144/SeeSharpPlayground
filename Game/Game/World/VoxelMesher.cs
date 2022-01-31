@@ -75,7 +75,7 @@ namespace Game.Game.World
 			new ( -1, 1, 0 ),  new ( -1, 1, 1 ),   new ( 0, 1, 1 ),	  new ( 1, 1, 0 ),	 new ( 1, 1, 1 ),	 new ( 0, 1, 1 ),
 		};
         
-        public static Mesh CreateMesh(IContainer3D<Voxel> voxels)
+        public static MeshBuilder CreateMesh(IContainer3D<Voxel> voxels)
         {
             MeshBuilder meshBuilder = new MeshBuilder();
 
@@ -88,12 +88,12 @@ namespace Game.Game.World
                 
                 bool[] touchingNeighbours =
                 {
-                    cursor.Neighbour(new Vector3i(0, 0, -1), in Voxel.Air).IsInvisible(),
-                    cursor.Neighbour(new Vector3i(-1, 0, 0), in Voxel.Air).IsInvisible(),
-                    cursor.Neighbour(new Vector3i(0, 0, 1), in Voxel.Air).IsInvisible(),
-                    cursor.Neighbour(new Vector3i(1, 0, 0), in Voxel.Air).IsInvisible(),
-                    cursor.Neighbour(new Vector3i(0, -1, 0), in Voxel.Air).IsInvisible(),
-                    cursor.Neighbour(new Vector3i(0, 1, 0), in Voxel.Air).IsInvisible()
+                    cursor.Relative(new Vector3i(0, 0, -1), in Voxel.Air).IsInvisible(),
+                    cursor.Relative(new Vector3i(-1, 0, 0), in Voxel.Air).IsInvisible(),
+                    cursor.Relative(new Vector3i(0, 0, 1), in Voxel.Air).IsInvisible(),
+                    cursor.Relative(new Vector3i(1, 0, 0), in Voxel.Air).IsInvisible(),
+                    cursor.Relative(new Vector3i(0, -1, 0), in Voxel.Air).IsInvisible(),
+                    cursor.Relative(new Vector3i(0, 1, 0), in Voxel.Air).IsInvisible()
                 };
                 
                 for (var i = 0; i < touchingNeighbours.Length; i++)
@@ -106,9 +106,9 @@ namespace Game.Game.World
 	                for (var j = 0; j < Faces[i].Length; j++)
 	                {
 		                int k = i * 18 + j * 3;
-						int s1 = cursor.Neighbour(AmbientOcclusion[ k + 0 ], Voxel.Air).IsInvisible() ? 0 : 1;
-						int s2 = cursor.Neighbour(AmbientOcclusion[ k + 2 ], Voxel.Air).IsInvisible() ? 0 : 1;
-						int c = cursor.Neighbour(AmbientOcclusion[ k + 1 ], Voxel.Air).IsInvisible() ? 0 : 1;
+						int s1 = cursor.Relative(AmbientOcclusion[ k + 0 ], Voxel.Air).IsInvisible() ? 0 : 1;
+						int s2 = cursor.Relative(AmbientOcclusion[ k + 2 ], Voxel.Air).IsInvisible() ? 0 : 1;
+						int c = cursor.Relative(AmbientOcclusion[ k + 1 ], Voxel.Air).IsInvisible() ? 0 : 1;
 						int acDarkness = ( s1 != 0 && s2 != 0 ) ? 3 : s1 + s2 + c;
 						acDarkness *= 20;
 						
@@ -120,7 +120,7 @@ namespace Game.Game.World
                 }
             }
             
-            return meshBuilder.Build();
+            return meshBuilder;
         }
     }
 }
