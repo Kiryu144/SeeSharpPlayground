@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using OpenTK.Mathematics;
 
-namespace Game.Render.Math
+namespace Engine.Render.Math
 {
     public class MatrixStack
     {

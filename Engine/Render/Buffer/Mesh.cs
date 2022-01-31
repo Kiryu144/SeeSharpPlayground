@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using OpenTK.Graphics;
 
-namespace Game.Render.Buffer
+namespace Engine.Render.Buffer
 {
     public class Mesh
     {

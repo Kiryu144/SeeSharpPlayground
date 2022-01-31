@@ -1,8 +1,7 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
+using Engine.Render.Buffer;
+using Engine.Render.Shader;
 using Game.Game.Container;
-using Game.Render.Buffer;
-using Game.Render.Shader;
 using OpenTK.Graphics.OpenGL;
 
 namespace Game.Game.World

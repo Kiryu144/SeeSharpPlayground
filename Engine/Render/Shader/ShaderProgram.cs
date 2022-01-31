@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Game.Render.Buffer;
+using Engine.Render.Buffer;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
-namespace Game.Render.Shader
+namespace Engine.Render.Shader
 {
     public abstract class ShaderProgram
     {

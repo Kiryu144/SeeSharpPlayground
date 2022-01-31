@@ -1,4 +1,4 @@
-﻿namespace Game.Render.Shader
+﻿namespace Engine.Render.Shader
 {
     public class Shaders
     {

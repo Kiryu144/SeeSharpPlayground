@@ -1,6 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL;
 
-namespace Game.Render.Shader
+namespace Engine.Render.Shader
 {
     public class PositionColorShader : BasicShader
     {

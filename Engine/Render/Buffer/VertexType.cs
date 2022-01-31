@@ -1,7 +1,6 @@
-﻿using System;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL;
 
-namespace Game.Render.Buffer
+namespace Engine.Render.Buffer
 {
     public class VertexType
     {

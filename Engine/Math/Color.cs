@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Game.Game.Container
+namespace Engine.Render.Math
 {
     public struct Color
     {
@@ -28,9 +28,9 @@ namespace Game.Game.Container
 
         public void Lighten(int amount)
         {
-            R = (byte) Math.Clamp(amount + R, Byte.MinValue, Byte.MaxValue);
-            G = (byte) Math.Clamp(amount + G, Byte.MinValue, Byte.MaxValue);
-            B = (byte) Math.Clamp(amount + B, Byte.MinValue, Byte.MaxValue);
+            R = (byte) System.Math.Clamp(amount + R, Byte.MinValue, Byte.MaxValue);
+            G = (byte) System.Math.Clamp(amount + G, Byte.MinValue, Byte.MaxValue);
+            B = (byte) System.Math.Clamp(amount + B, Byte.MinValue, Byte.MaxValue);
         }
         
         public void Darken(int amount)

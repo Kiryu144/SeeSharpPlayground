@@ -1,11 +1,11 @@
-﻿using Game.Render.Buffer;
-using Game.Render.Math;
-using Game.Render.Shader;
+﻿using Engine.Render.Buffer;
+using Engine.Render.Math;
+using Engine.Render.Shader;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
-namespace Game.Render
+namespace Engine.Render
 {
     public class Renderer
     {

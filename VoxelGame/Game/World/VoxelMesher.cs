@@ -1,9 +1,7 @@
-﻿using System.Drawing;
+﻿using Engine.Render.Buffer;
 using Game.Game.Container;
-using Game.Render.Buffer;
-using OpenTK;
 using OpenTK.Mathematics;
-using Color = Game.Game.Container.Color;
+using Color = Engine.Render.Math.Color;
 
 namespace Game.Game.World
 {

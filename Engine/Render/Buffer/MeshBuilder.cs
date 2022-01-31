@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using Engine.Render.Math;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
-using Color = Game.Game.Container.Color;
 
-namespace Game.Render.Buffer
+namespace Engine.Render.Buffer
 {
     public class MeshBuilder
     {
